@@ -1,5 +1,5 @@
 import { OrthographicCamera } from "@react-three/drei";
-import { MeshProps, useFrame } from "@react-three/fiber";
+import { MeshProps } from "@react-three/fiber";
 import React, { Suspense, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
@@ -8,10 +8,6 @@ import { Circle, intersectionCircleCircle } from "core/math/circle";
 type CircleProps = MeshProps;
 const Circle2D: React.FC<CircleProps> = (props) => {
     const ref = useRef<THREE.Mesh>(null);
-    useFrame((_, dt) => {
-        if (!ref.current) return;
-        ref.current.rotateZ((Math.PI / 2) * dt);
-    });
 
     return (
         <mesh ref={ref} {...props}>
