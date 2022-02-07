@@ -1,6 +1,5 @@
 module.exports = {
-    rootDir: "../",
-    setupFilesAfterEnv: ["./config/jest.setup.js"],
+    setupFilesAfterEnv: ["./jest.setup.js"],
     collectCoverageFrom: ["**/*.{js,jsx,ts,tsx}", "!**/*.d.ts", "!**/node_modules/**"],
     moduleDirectories: ["node_modules", "<rootDir>"],
     moduleNameMapper: {
