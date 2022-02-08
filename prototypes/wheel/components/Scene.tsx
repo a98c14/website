@@ -105,7 +105,6 @@ const Scene: React.FC<SceneProps> = ({ prizes }) => {
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
             if (e.code === "Space") {
-                console.log("Clicked", e);
             }
         }
         window.addEventListener("keydown", onKeyDown);
