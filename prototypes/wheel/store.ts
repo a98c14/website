@@ -2,4 +2,4 @@ import create from "zustand";
 
 type Store = {};
 
-export const useStore = create<Store>((set) => ({}));
+export const useStore = create<Store>(() => ({}));

@@ -1,10 +1,9 @@
-import { Circle, OrbitControls, OrthographicCamera, Plane, Stats } from "@react-three/drei";
-import { MeshProps } from "@react-three/fiber";
-import React, { Suspense, useLayoutEffect, useRef, useState } from "react";
+import { OrbitControls, OrthographicCamera, Stats } from "@react-three/drei";
+import React, { Suspense, useLayoutEffect, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
-import { dist, Vec2 } from "@core/math/vector";
-import { circumcircle, findCircumcenter } from "@core/math/triangle";
+import { Vec2 } from "@core/math/vector";
+import { circumcircle } from "@core/math/triangle";
 
 type TriangleProps = {
     p1: Vec2;
@@ -50,16 +49,6 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
                 <lineBasicMaterial color={"white"} />
             </line>
         </>
-    );
-};
-
-type BoxProps = MeshProps;
-const Box: React.FC<BoxProps> = (props) => {
-    return (
-        <mesh {...props}>
-            <planeGeometry args={[1, 1, 1]} />
-            <meshBasicMaterial color={"red"} />
-        </mesh>
     );
 };
 
