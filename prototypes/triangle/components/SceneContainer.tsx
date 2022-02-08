@@ -13,7 +13,6 @@ const SceneContainer: React.FC = () => {
             dpr={Math.max(window.devicePixelRatio, 2)}
             linear={true}
             flat={true}
-            onCreated={(state) => state.gl.setClearColor("#d4c599")}
         >
             <Suspense fallback={null}>
                 <Scene />
