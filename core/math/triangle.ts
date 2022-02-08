@@ -1,3 +1,4 @@
+import { EPSILON } from "./constant";
 import { Vec2 } from "./vector";
 
 export type Triangle = {
@@ -97,23 +98,22 @@ export function doesShareVertex(t1: Triangle, t2: Triangle): boolean {
 }
 
 export function circumcircle(t: Triangle) {
+    // Vertices
     const a = t.v[0];
     const b = t.v[1];
     const c = t.v[2];
 
-    const EPSILON = 1.0 / 1048576.0;
-
+    // Middle points
     let bs1: Vec2 = { x: 0, y: 0 };
     let bs2: Vec2 = { x: 0, y: 0 };
+
+    // Slopes
+    let m1: number, m2: number;
 
     let fabsy1y2 = Math.abs(a.y - b.y),
         fabsy2y3 = Math.abs(b.y - c.y),
         xc,
-        yc,
-        m1, // Slope of first line
-        m2, // Slope of second line
-        dx,
-        dy;
+        yc;
 
     /* Check for coincident points */
     if (fabsy1y2 < EPSILON && fabsy2y3 < EPSILON) return { x: 0, y: 0, r: 0 };
@@ -141,25 +141,7 @@ export function circumcircle(t: Triangle) {
         yc = fabsy1y2 > fabsy2y3 ? m1 * (xc - bs1.x) + bs1.y : m2 * (xc - bs2.x) + bs2.y;
     }
 
-    dx = b.x - xc;
-    dy = b.y - yc;
+    const dx = b.x - xc;
+    const dy = b.y - yc;
     return { x: xc, y: yc, r: Math.sqrt(dx * dx + dy * dy) };
-}
-
-export function findCircumcenter(t: Triangle) {
-    const a = t.v[0];
-    const b = t.v[1];
-    const c = t.v[2];
-
-    const i1 = { x: a.x + (b.x - a.x) / 2, y: a.y + (b.y + a.y) / 2 };
-    const i2 = { x: a.x + (c.x - a.x) / 2, y: a.y + (c.y + a.y) / 2 };
-    const s1 = { x: -(b.y - a.y), y: b.x - a.x };
-    const s2 = { x: -(c.y - a.y), y: c.x - a.x };
-    const m1 = s1.y / (s1.x + 0.0001);
-    const m2 = s2.y / (s2.x + 0.0001);
-    const c1 = i1.y - m1 * i1.x;
-    const c2 = i2.y - m2 * i2.x;
-    const fx = (c2 - c1) / (m1 - m2);
-    const fy = m2 * fx + c2;
-    return { x: fx, y: fy };
 }
