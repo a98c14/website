@@ -1,9 +1,11 @@
-import { OrbitControls, OrthographicCamera, Stats } from "@react-three/drei";
+import { OrbitControls, Plane, Stats } from "@react-three/drei";
 import React, { Suspense, useLayoutEffect, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import { Vec2 } from "@core/math/vector";
 import { circumcircle } from "@core/math/triangle";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useStore } from "../store";
 
 type TriangleProps = {
     p1: Vec2;
@@ -13,7 +15,9 @@ type TriangleProps = {
 const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
     const triRef = useRef<THREE.BufferGeometry>(null);
     const circleRef = useRef<THREE.BufferGeometry>(null);
-
+    const planeRef = useRef<THREE.Mesh>(null);
+    const { viewport } = useThree();
+    console.log("Viewport", viewport);
     useLayoutEffect(() => {
         let points = [];
         points.push(new THREE.Vector3(p1.x, p1.y, 0));
@@ -38,6 +42,11 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
         circleRef.current!.setFromPoints(points);
     }, [p1, p2, p3]);
 
+    useFrame(() => {
+        var mouse = useStore.getState().mouseState;
+        planeRef.current?.position.set(mouse.world.x, mouse.world.y, 0);
+    });
+
     return (
         <>
             <line>
@@ -48,10 +57,10 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
                 <bufferGeometry ref={circleRef} attach="geometry" />
                 <lineBasicMaterial color={"white"} />
             </line>
+            <Plane ref={planeRef} scale={[0.2, 0.2, 0.2]} />
         </>
     );
 };
-
 const Scene: React.FC = () => {
     const { p1, p2, p3 } = useControls({
         p1: { value: { x: -0.6, y: 0 }, step: 0.01, joystick: "invertY" },
@@ -61,8 +70,6 @@ const Scene: React.FC = () => {
 
     return (
         <Suspense fallback={null}>
-            <OrbitControls enableRotate={false} />
-            <OrthographicCamera position={[0, 0, 8]} />
             <Triangle p1={p1} p2={p2} p3={p3} />
             <Stats />
         </Suspense>
