@@ -1,6 +1,5 @@
 import { OrbitControls, OrthographicCamera, useTexture } from "@react-three/drei";
-import React, { Suspense, useEffect, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import React, { Suspense, useEffect } from "react";
 import * as THREE from "three";
 
 import bearWithHat from "@prototypes/wheel/assets/wheel/bear_with_hat.png";
@@ -11,56 +10,23 @@ import innerframe from "@prototypes/wheel/assets/wheel/background.png";
 import pin from "@prototypes/wheel/assets/wheel/piepin.png";
 import background from "@prototypes/wheel/assets/misc/background.png";
 import rays from "@prototypes/wheel/assets/misc/rays_01.png";
+import lightOn from "@prototypes/wheel/assets/wheel/lighton.png";
+import lightOff from "@prototypes/wheel/assets/wheel/lightoff.png";
 import { Prize } from "../types/Prize";
-
-type SpriteProps = { image: StaticImageData; position: [number, number, number]; scale: number };
-
-const Sprite = React.forwardRef<THREE.Sprite, SpriteProps>(({ image, position, scale }, ref) => {
-    const texture = useTexture(image.src);
-    const aspect = image.width / image.height;
-    return (
-        <sprite ref={ref} position={position} scale={[image.height * scale * aspect, image.height * scale, 1]}>
-            <spriteMaterial attach="material" map={texture} />
-        </sprite>
-    );
-});
-
-type PrizePartProps = {
-    texture: THREE.Texture;
-    pinTexture: THREE.Texture;
-    position: [number, number, number];
-    scale: number;
-    rotation: number;
-};
-const PrizePart: React.FC<PrizePartProps> = ({ texture, position, scale, rotation, pinTexture }) => {
-    const aspect = texture.image.width / texture.image.height;
-    return (
-        <group position={position} rotation={[0, 0, rotation]}>
-            <sprite scale={[texture.image.height * scale * aspect, texture.image.height * scale, 1]}>
-                <spriteMaterial rotation={rotation} attach="material" map={texture} />
-            </sprite>
-            <sprite position={[29, 220, 1]} scale={[80, 80, 1]}>
-                <spriteMaterial rotation={rotation} attach="material" map={pinTexture} />
-            </sprite>
-        </group>
-    );
-};
-
-type RayProps = { image: StaticImageData; position: [number, number, number]; scale: number };
-const Ray: React.FC<RayProps> = ({ image, position, scale }) => {
-    const ref = useRef<THREE.Sprite>(null);
-    useFrame((_, dt) => {
-        if (!ref.current) return;
-        ref.current.material.rotation += (Math.PI / 2) * dt;
-    });
-    return <Sprite ref={ref} position={position} scale={scale} image={image} />;
-};
+import { Sprite } from "./Sprite";
+import { Ray } from "./Ray";
+import { WheelPrize } from "./WheelPrize";
+import { Light } from "./Light";
 
 type WheelProps = {
     textures: THREE.Texture[];
 };
+
+const LIGHT_COUNT = 12;
 const Wheel: React.FC<WheelProps> = ({ textures }) => {
     const pinTexture = useTexture(pin.src);
+    const lightOnTexture = useTexture(lightOn.src);
+    const lightOffTexture = useTexture(lightOff.src);
     return (
         <>
             <group scale={[0.01, 0.01, 0.01]}>
@@ -79,7 +45,7 @@ const Wheel: React.FC<WheelProps> = ({ textures }) => {
                         const x = x0 * cos + sin * y0 * -1;
                         const y = x0 * sin + y0 * cos;
                         return (
-                            <PrizePart
+                            <WheelPrize
                                 pinTexture={pinTexture}
                                 key={idx}
                                 texture={texture}
@@ -89,6 +55,27 @@ const Wheel: React.FC<WheelProps> = ({ textures }) => {
                             />
                         );
                     })}
+                    <group position={[0, -0.5, 0]}>
+                        {[...Array(LIGHT_COUNT)].map((_, idx) => {
+                            const angle = idx * ((2 * Math.PI) / LIGHT_COUNT);
+                            const cos = Math.cos(angle);
+                            const sin = Math.sin(angle);
+                            const x0 = 0;
+                            const y0 = 276;
+                            const x = x0 * cos + sin * y0 * -1;
+                            const y = x0 * sin + y0 * cos;
+                            return (
+                                <Light
+                                    key={idx}
+                                    initialVisibility={idx % 2 === 0}
+                                    lightOnImage={lightOnTexture}
+                                    lightOffImage={lightOffTexture}
+                                    position={[x, y, 0]}
+                                    scale={0.5}
+                                />
+                            );
+                        })}
+                    </group>
                 </group>
                 <Sprite position={[0, 270, 1]} scale={0.5} image={stopper} />
                 <Sprite position={[0, 0, 1]} scale={0.5} image={spinButton} />
