@@ -3,7 +3,7 @@ import React, { Suspense, useLayoutEffect, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import { Vec2 } from "@core/math/vector";
-import { circumcircle } from "@core/math/triangle";
+import { circumcircle, isPointInCircumcircle } from "@core/math/triangle";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useStore } from "../store";
 
@@ -13,11 +13,10 @@ type TriangleProps = {
     p3: Vec2;
 };
 const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
+    const cameraRef = useStore((state) => state.cameraRef);
     const triRef = useRef<THREE.BufferGeometry>(null);
     const circleRef = useRef<THREE.BufferGeometry>(null);
     const planeRef = useRef<THREE.Mesh>(null);
-    const { viewport } = useThree();
-    console.log("Viewport", viewport);
     useLayoutEffect(() => {
         let points = [];
         points.push(new THREE.Vector3(p1.x, p1.y, 0));
@@ -45,6 +44,13 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
     useFrame(() => {
         var mouse = useStore.getState().mouseState;
         planeRef.current?.position.set(mouse.world.x, mouse.world.y, 0);
+        const zoom = cameraRef.current?.zoom ?? 10;
+        const scale = 10 / zoom;
+        planeRef.current?.scale.set(scale, scale, scale);
+        const material: any = planeRef.current?.material;
+        const isInCircle = isPointInCircumcircle(mouse.world, { v: [p1, p2, p3] });
+        if (isInCircle) material.color.set("red");
+        else material.color.set("white");
     });
 
     return (
@@ -57,7 +63,7 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
                 <bufferGeometry ref={circleRef} attach="geometry" />
                 <lineBasicMaterial color={"white"} />
             </line>
-            <Plane ref={planeRef} scale={[0.2, 0.2, 0.2]} />
+            <Plane ref={planeRef} />
         </>
     );
 };
