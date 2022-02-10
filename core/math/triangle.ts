@@ -50,7 +50,7 @@ export function isPointInCircumcircle(p: Vec2, t: Triangle): boolean {
     let bx_ = t.v[1].x - p.x;
     let by_ = t.v[1].y - p.y;
     let cx_ = t.v[2].x - p.x;
-    let cy_ = t.v[2].x - p.y;
+    let cy_ = t.v[2].y - p.y;
 
     return (
         (ax_ * ax_ + ay_ * ay_) * (bx_ * cy_ - cx_ * by_) -
