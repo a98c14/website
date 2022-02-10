@@ -1,3 +1,4 @@
+import React from "react";
 import * as THREE from "three";
 
 type Props = {
@@ -8,11 +9,11 @@ type Props = {
     rotation: number;
 };
 
-export const WheelPrize: React.FC<Props> = ({ texture, position, scale, rotation, pinTexture }) => {
+export const WheelPrize = React.forwardRef<THREE.Sprite, Props>(({ texture, position, scale, rotation, pinTexture }, ref) => {
     const aspect = texture.image.width / texture.image.height;
     return (
         <group position={position} rotation={[0, 0, rotation]}>
-            <sprite scale={[texture.image.height * scale * aspect, texture.image.height * scale, 1]}>
+            <sprite ref={ref} scale={[texture.image.height * scale * aspect, texture.image.height * scale, 1]}>
                 <spriteMaterial rotation={rotation} attach="material" map={texture} />
             </sprite>
             <sprite position={[29, 220, 1]} scale={[80, 80, 1]}>
@@ -20,4 +21,4 @@ export const WheelPrize: React.FC<Props> = ({ texture, position, scale, rotation
             </sprite>
         </group>
     );
-};
+});

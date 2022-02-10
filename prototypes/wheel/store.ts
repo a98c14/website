@@ -1,5 +1,15 @@
 import create from "zustand";
 
-type Store = {};
+type WheelState = {
+    shouldRun: boolean;
+    playStopperAnimation: boolean;
+    isStopperPlaying: boolean;
+};
 
-export const useStore = create<Store>(() => ({}));
+type Store = {
+    wheelState: WheelState;
+};
+
+export const useStore = create<Store>(() => ({
+    wheelState: { shouldRun: false, playStopperAnimation: false, isStopperPlaying: false },
+}));

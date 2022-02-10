@@ -1,10 +1,10 @@
-import { OrbitControls, Plane, Stats } from "@react-three/drei";
+import { Plane, Stats } from "@react-three/drei";
 import React, { Suspense, useLayoutEffect, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
 import { Vec2 } from "@core/math/vector";
 import { circumcircle, isPointInCircumcircle } from "@core/math/triangle";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { useStore } from "../store";
 
 type TriangleProps = {
