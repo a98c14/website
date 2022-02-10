@@ -1,4 +1,4 @@
-import { Plane, Stats } from "@react-three/drei";
+import { Circle, Stats } from "@react-three/drei";
 import React, { Suspense, useLayoutEffect, useRef } from "react";
 import { useControls } from "leva";
 import * as THREE from "three";
@@ -25,7 +25,7 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
         points.push(new THREE.Vector3(p1.x, p1.y, 0));
         triRef.current!.setFromPoints(points);
         points = [];
-        const c = circumcircle({ v: [p1, p2, p3] });
+        const c = circumcircle([p1, p2, p3]);
         const r = c.r;
         const a = { x: 0, y: r };
         const cos = Math.cos(-(2 * Math.PI) / 64);
@@ -45,10 +45,10 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
         var mouse = useStore.getState().mouseState;
         planeRef.current?.position.set(mouse.world.x, mouse.world.y, 0);
         const zoom = cameraRef.current?.zoom ?? 10;
-        const scale = 10 / zoom;
+        const scale = 7 / zoom;
         planeRef.current?.scale.set(scale, scale, scale);
         const material: any = planeRef.current?.material;
-        const isInCircle = isPointInCircumcircle(mouse.world, { v: [p1, p2, p3] });
+        const isInCircle = isPointInCircumcircle(mouse.world, [p1, p2, p3]);
         if (isInCircle) material.color.set("red");
         else material.color.set("white");
     });
@@ -63,7 +63,7 @@ const Triangle: React.FC<TriangleProps> = ({ p1, p2, p3 }) => {
                 <bufferGeometry ref={circleRef} attach="geometry" />
                 <lineBasicMaterial color={"white"} />
             </line>
-            <Plane ref={planeRef} />
+            <Circle ref={planeRef} args={[1, 64]} />
         </>
     );
 };

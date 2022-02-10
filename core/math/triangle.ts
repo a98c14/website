@@ -1,14 +1,8 @@
 import { EPSILON } from "./constant";
 import { Vec2 } from "./vector";
 
-export type Triangle = {
-    v: [Vec2, Vec2, Vec2];
-};
-
-export type Edge = {
-    p1: Vec2;
-    p2: Vec2;
-};
+export type Triangle = [Vec2, Vec2, Vec2];
+export type Edge = [Vec2, Vec2];
 
 /**
  * Returns whether given triangle is counter clockwise or not
@@ -16,7 +10,7 @@ export type Edge = {
  * @returns True if given triangle is ordered counter clockwise
  */
 export function isCounterClockwise(t: Triangle): boolean {
-    return (t.v[1].x - t.v[0].x) * (t.v[2].y - t.v[0].y) - (t.v[2].x - t.v[0].x) * (t.v[1].y - t.v[0].x) > 0;
+    return (t[1].x - t[0].x) * (t[2].y - t[0].y) - (t[2].x - t[0].x) * (t[1].y - t[0].x) > 0;
 }
 
 /**
@@ -26,9 +20,9 @@ export function isCounterClockwise(t: Triangle): boolean {
  */
 export function getTriangleEdges(t: Triangle): [Edge, Edge, Edge] {
     return [
-        { p1: t.v[0], p2: t.v[1] },
-        { p1: t.v[1], p2: t.v[2] },
-        { p1: t.v[2], p2: t.v[0] },
+        [t[0], t[1]],
+        [t[1], t[2]],
+        [t[2], t[0]],
     ];
 }
 
@@ -39,18 +33,25 @@ export function getTriangleEdges(t: Triangle): [Edge, Edge, Edge] {
  * @returns Edges for the given triangle
  */
 export function getTriangleEdgesInPlace(t: Triangle, edges: [Edge, Edge, Edge]) {
-    edges[0] = { p1: t.v[0], p2: t.v[1] };
-    edges[1] = { p1: t.v[1], p2: t.v[2] };
-    edges[2] = { p1: t.v[2], p2: t.v[0] };
+    edges[0] = [t[0], t[1]];
+    edges[1] = [t[1], t[2]];
+    edges[2] = [t[2], t[0]];
 }
 
+/**
+ * Returns whether point is inside the circumcircle of triangle or not.
+ * If triangle is not counterclockwise result should be flipped.
+ * @param p Point to check
+ * @param t Triangle
+ * @returns True if point is inside triangle
+ */
 export function isPointInCircumcircle(p: Vec2, t: Triangle): boolean {
-    let ax_ = t.v[0].x - p.x;
-    let ay_ = t.v[0].y - p.y;
-    let bx_ = t.v[1].x - p.x;
-    let by_ = t.v[1].y - p.y;
-    let cx_ = t.v[2].x - p.x;
-    let cy_ = t.v[2].y - p.y;
+    let ax_ = t[0].x - p.x;
+    let ay_ = t[0].y - p.y;
+    let bx_ = t[1].x - p.x;
+    let by_ = t[1].y - p.y;
+    let cx_ = t[2].x - p.x;
+    let cy_ = t[2].y - p.y;
 
     return (
         (ax_ * ax_ + ay_ * ay_) * (bx_ * cy_ - cx_ * by_) -
@@ -62,8 +63,8 @@ export function isPointInCircumcircle(p: Vec2, t: Triangle): boolean {
 
 export function areEdgesEqual(e1: Edge, e2: Edge) {
     return (
-        (e1.p1.x === e2.p1.x && e1.p1.y === e2.p1.y && e1.p2.x === e2.p2.x && e1.p2.y === e2.p2.y) ||
-        (e1.p2.x === e2.p1.x && e1.p2.y === e2.p1.y && e1.p1.x === e2.p2.x && e1.p1.y === e2.p2.y)
+        (e1[0].x === e2[0].x && e1[0].y === e2[0].y && e1[1].x === e2[1].x && e1[1].y === e2[1].y) ||
+        (e1[1].x === e2[0].x && e1[1].y === e2[0].y && e1[0].x === e2[1].x && e1[0].y === e2[1].y)
     );
 }
 
@@ -79,19 +80,13 @@ export function edgeExistsInTriangles(e: Edge, triangles: Triangle[]): boolean {
 }
 
 export function createTriangle(e: Edge, p: Vec2): Triangle {
-    return {
-        v: [
-            { x: e.p1.x, y: e.p1.y },
-            { x: e.p2.x, y: e.p2.y },
-            { x: p.x, y: p.y },
-        ],
-    };
+    return [e[0], e[1], { x: p.x, y: p.y }];
 }
 
 export function doesShareVertex(t1: Triangle, t2: Triangle): boolean {
-    for (let i = 0; i < t1.v.length; i++) {
-        for (let j = 0; j < t2.v.length; j++) {
-            if (Math.abs(t1.v[i].x - t2.v[j].x) + Math.abs(t1.v[i].y - t2.v[j].y) < 0.1) return true;
+    for (let i = 0; i < t1.length; i++) {
+        for (let j = 0; j < t2.length; j++) {
+            if (Math.abs(t1[i].x - t2[j].x) + Math.abs(t1[i].y - t2[j].y) < 0.1) return true;
         }
     }
     return false;
@@ -99,9 +94,9 @@ export function doesShareVertex(t1: Triangle, t2: Triangle): boolean {
 
 export function circumcircle(t: Triangle) {
     // Vertices
-    const a = t.v[0];
-    const b = t.v[1];
-    const c = t.v[2];
+    const a = t[0];
+    const b = t[1];
+    const c = t[2];
 
     // Middle points
     let bs1: Vec2 = { x: 0, y: 0 };
