@@ -13,12 +13,12 @@ import { v4 as uuid } from "uuid";
 
 const superTriangle: TriangleInfo = {
     t: [
-        { x: -1000, y: -1000 },
-        { x: -1000, y: 1000 },
-        { x: 1000, y: 0 },
+        { x: -10000, y: -10000 },
+        { x: -10000, y: 10000 },
+        { x: 10000, y: 0 },
     ],
     id: "super",
-    ccw: true,
+    ccw: false,
 };
 
 /**
@@ -51,9 +51,7 @@ export function triangulate(points: Vec2[]): Triangle[] {
         const triangleIds = Object.keys(triangles);
         triangleIds.forEach((k) => {
             const info = triangles[k];
-            let isPointIn = isPointInCircumcircle(point, info.t);
-            if (!info.ccw) isPointIn = !isPointIn;
-            if (isPointIn) {
+            if (info.ccw == isPointInCircumcircle(point, info.t)) {
                 badTriangles.push(info);
             }
         });

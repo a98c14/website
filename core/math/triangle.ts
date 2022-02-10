@@ -10,7 +10,7 @@ export type Edge = [Vec2, Vec2];
  * @returns True if given triangle is ordered counter clockwise
  */
 export function isCounterClockwise(t: Triangle): boolean {
-    return (t[1].x - t[0].x) * (t[2].y - t[0].y) - (t[2].x - t[0].x) * (t[1].y - t[0].x) > 0;
+    return (t[1].x - t[0].x) * (t[2].y - t[0].y) - (t[2].x - t[0].x) * (t[1].y - t[0].y) > 0;
 }
 
 /**

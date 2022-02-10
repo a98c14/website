@@ -1,16 +1,24 @@
-import { OrthographicCamera, Plane } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
-import React, { useRef } from "react";
-import * as THREE from "three";
+import { useMouse } from "@core/controls/hooks/useMouse";
+import { OrbitControls, OrthographicCamera } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import React from "react";
+import { useDelaunayStore } from "../store";
+import shallow from "zustand/shallow";
+import Scene from "./Scene";
 
 const SceneContainer: React.FC = () => {
-    const planeRef = useRef<THREE.Mesh>(null);
-    useFrame(() => {
-        if (!planeRef.current) return;
-        planeRef.current.rotateX(30);
+    const { addPoint, cameraRef, canvasRef } = useDelaunayStore(
+        (state) => ({ addPoint: state.addPoint, cameraRef: state.cameraRef, canvasRef: state.canvasRef }),
+        shallow
+    );
+    useMouse(useDelaunayStore, (v) => {
+        addPoint(v);
+        console.log(v);
     });
+
     return (
         <Canvas
+            ref={canvasRef}
             mode="concurrent"
             style={{
                 position: "absolute",
@@ -20,11 +28,9 @@ const SceneContainer: React.FC = () => {
             linear={true}
             flat={true}
         >
-            <OrthographicCamera position={[0, 0, 5]} zoom={80} />
-            <Plane ref={planeRef} position={[0, 0, 0]}>
-                <meshBasicMaterial color={"hotpink"} />
-            </Plane>
-            {/* <Suspense fallback={null}></Suspense> */}
+            <OrbitControls enableRotate={false} />
+            <OrthographicCamera ref={cameraRef} makeDefault near={0.5} far={1000} zoom={100} position={[0, 0, 8]} />
+            <Scene />
         </Canvas>
     );
 };
