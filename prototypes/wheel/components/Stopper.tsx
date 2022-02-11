@@ -18,7 +18,7 @@ export const Stopper: React.FC<Props> = () => {
             wheelState.playStopperAnimation = false;
             wheelState.isStopperPlaying = true;
             const mat = spriteRef.current.material;
-            mat.rotation = -Math.PI / 2;
+            mat.rotation = (-Math.PI / 4) * Math.max(Math.min(1, wheelState.lastCollisionSpeed / 2.8), 0.2);
         } else if (!wheelState.playStopperAnimation && wheelState.isStopperPlaying) {
             if (mat.rotation > -0.4) wheelState.isStopperPlaying = false;
         }

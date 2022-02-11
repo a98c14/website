@@ -76,6 +76,7 @@ const Scene: React.FC<SceneProps> = ({ prizes }) => {
             if (e.code === "Space") {
                 const wheelState = useStore.getState().wheelState;
                 wheelState.shouldRun = !wheelState.shouldRun;
+                wheelState.shouldBrake = false;
             }
         }
         window.addEventListener("keydown", onKeyDown);

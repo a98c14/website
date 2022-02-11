@@ -22,14 +22,23 @@ export const InnerWheel: React.FC<InnerWheelProps> = ({ textures }) => {
     useFrame((_, dt) => {
         if (!wheelRef.current) return;
         const wheelState = useStore.getState().wheelState;
-        currentSpeed = lerp(currentSpeed, wheelState.shouldRun ? ROTATION_SPEED : 0, dt / 4);
+        let targetSpeed = wheelState.shouldRun ? ROTATION_SPEED : 0.4;
+        targetSpeed = wheelState.shouldBrake ? 0 : targetSpeed;
+        currentSpeed = lerp(currentSpeed, targetSpeed, wheelState.shouldBrake ? dt : dt / 4);
         wheelRef.current.rotateZ(currentSpeed * dt);
         for (let i = 0; i < prizes.length; i++) {
             const prize = prizes[i]?.current;
             const mat = prize?.material;
             if (mat) {
-                if (mat.rotation % Math.PI > 1.85 && mat.rotation % Math.PI < 2.07 && wheelState.isStopperPlaying != true) {
+                const rot = mat.rotation % (Math.PI * 2);
+                if (i === 0 && !wheelState.shouldRun && currentSpeed < 0.6) {
+                    if (rot > 4.3 && rot < 5.1) wheelState.shouldBrake = true;
+                }
+                if (rot > 1.87 && rot < 2.07 && wheelState.isStopperPlaying != true && wheelState.lastCollisionIndex !== i) {
                     wheelState.playStopperAnimation = true;
+                    wheelState.lastCollisionIndex = i;
+                    wheelState.lastCollisionSpeed = currentSpeed;
+                    console.log(currentSpeed);
                 }
                 mat.rotation = mat.rotation + currentSpeed * dt;
             }
