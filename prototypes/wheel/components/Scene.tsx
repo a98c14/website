@@ -27,6 +27,11 @@ const LIGHT_COUNT = 12;
 const Wheel: React.FC<WheelProps> = ({ textures }) => {
     const lightOnTexture = useTexture(lightOn.src);
     const lightOffTexture = useTexture(lightOff.src);
+    const onWheelLoad = useStore((state) => state.onWheelLoad);
+
+    useEffect(() => {
+        onWheelLoad();
+    }, []);
 
     return (
         <>
@@ -74,9 +79,10 @@ const Scene: React.FC<SceneProps> = ({ prizes }) => {
     useEffect(() => {
         function onKeyDown(e: KeyboardEvent) {
             if (e.code === "Space") {
-                const wheelState = useStore.getState().wheelState;
-                wheelState.shouldRun = !wheelState.shouldRun;
-                wheelState.shouldBrake = false;
+                const ws = useStore.getState().wheelState;
+                ws.shouldRun = !ws.shouldRun;
+                ws.shouldBrake = false;
+                ws.targetPrizeIndex = 0;
             }
         }
         window.addEventListener("keydown", onKeyDown);

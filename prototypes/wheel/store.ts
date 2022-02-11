@@ -1,9 +1,9 @@
 import create from "zustand";
 
-type WheelState = {
+export type WheelState = {
     shouldRun: boolean;
-    shouldStop: boolean;
-    targetPrize: number;
+    shouldBrake: boolean;
+    targetPrizeIndex: number;
     targetSpeed: number;
     playStopperAnimation: boolean;
     isStopperPlaying: boolean;
@@ -13,17 +13,25 @@ type WheelState = {
 
 type Store = {
     wheelState: WheelState;
+    onWheelRotationComplete: () => void;
+    onWheelLoad: () => void;
+    setOnWheelLoad: (callback: () => void) => void;
+    setOnWheelRotationComplete: (callback: () => void) => void;
 };
 
-export const useStore = create<Store>(() => ({
+export const useStore = create<Store>((set) => ({
     wheelState: {
         shouldRun: false,
-        shouldStop: false,
+        shouldBrake: false,
         playStopperAnimation: false,
         isStopperPlaying: false,
         lastCollisionIndex: -1,
         lastCollisionSpeed: 0,
-        targetPrize: -1,
+        targetPrizeIndex: -1,
         targetSpeed: 0,
     },
+    onWheelRotationComplete: () => {},
+    onWheelLoad: () => {},
+    setOnWheelLoad: (callback: () => void) => set({ onWheelLoad: callback }),
+    setOnWheelRotationComplete: (callback: () => void) => set({ onWheelRotationComplete: callback }),
 }));
